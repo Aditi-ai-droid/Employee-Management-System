@@ -1,49 +1,83 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 
 function AddEmployee() {
-  const [form, setForm] = useState({ name: "", position: "", salary: "" });
+
+  const [form, setForm] = useState({
+    name: "",
+    position: "",
+    salary: ""
+  });
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
+
     try {
-      const res = await fetch("http://localhost:5000/api/employees", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+
+      const res = await fetch(
+        "https://employee-management-api-msby.onrender.com/api/employees",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(form)
+        }
+      );
 
       const data = await res.json();
 
       if (res.ok) {
+
         alert("✅ Employee added successfully!");
+
         navigate("/employeeList");
+
       } else {
+
         alert("❌ " + data.message);
+
       }
+
     } catch (err) {
+
       console.error("Error:", err);
+
       alert("⚠️ Something went wrong.");
+
     }
+
   };
 
   return (
+
     <div className="add-container">
+
       <div className="add-card">
+
         <h2 className="add-title">Add New Employee</h2>
+
         <p className="add-subtitle">
           Fill the details below to add a new team member.
         </p>
 
         <form onSubmit={handleSubmit} className="add-form">
+
           <div className="input-group">
             <label>Name</label>
+
             <input
               type="text"
               name="name"
@@ -52,10 +86,12 @@ function AddEmployee() {
               onChange={handleChange}
               required
             />
+
           </div>
 
           <div className="input-group">
             <label>Position</label>
+
             <input
               type="text"
               name="position"
@@ -64,10 +100,12 @@ function AddEmployee() {
               onChange={handleChange}
               required
             />
+
           </div>
 
           <div className="input-group">
             <label>Salary (₹)</label>
+
             <input
               type="number"
               name="salary"
@@ -76,9 +114,11 @@ function AddEmployee() {
               onChange={handleChange}
               required
             />
+
           </div>
 
           <div className="btns">
+
             <button
               type="button"
               className="back-btn"
@@ -86,14 +126,22 @@ function AddEmployee() {
             >
               ← Back
             </button>
+
             <button type="submit" className="save-btn">
               Save Employee
             </button>
+
           </div>
+
         </form>
+
       </div>
+
     </div>
+
   );
+
 }
 
 export default AddEmployee;
+
