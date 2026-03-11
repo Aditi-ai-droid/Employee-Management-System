@@ -8,17 +8,19 @@ export default function Attendance() {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [records, setRecords] = useState([]);
 
-  // ✅ Fetch Employees
+  const API = "https://employee-management-api-msby.onrender.com";
+
+  // Fetch Employees
   useEffect(() => {
-    fetch("http://localhost:5000/employees")
+    fetch(`${API}/api/employees`)
       .then((res) => res.json())
       .then((data) => setEmployees(data))
       .catch((err) => console.error("Error fetching employees:", err));
   }, []);
 
-  // ✅ Fetch Attendance
+  // Fetch Attendance
   const fetchAttendance = () => {
-    fetch("http://localhost:5000/attendance")
+    fetch(`${API}/api/attendance`)
       .then((res) => res.json())
       .then((data) => setRecords(data))
       .catch((err) => console.error("Error fetching attendance:", err));
@@ -28,7 +30,7 @@ export default function Attendance() {
     fetchAttendance();
   }, []);
 
-  // ✅ Mark Attendance
+  // Mark Attendance
   const handleMarkAttendance = async () => {
     if (!selectedEmployee) {
       alert("Please select an employee");
@@ -36,16 +38,20 @@ export default function Attendance() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/attendance", {
+      const res = await fetch(`${API}/api/attendance`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ employeeId: selectedEmployee, date, status }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          employeeId: selectedEmployee,
+          date,
+          status,
+        }),
       });
 
-      const text = await res.text();
-      console.log("🔍 Backend Raw Response:", text);
+      const data = await res.json();
 
-      const data = JSON.parse(text);
       if (res.ok) {
         alert("✅ " + data.message);
         fetchAttendance();
@@ -57,7 +63,6 @@ export default function Attendance() {
     }
   };
 
-  // ✅ Counts
   const presentCount = records.filter((r) => r.status === "Present").length;
   const absentCount = records.filter((r) => r.status === "Absent").length;
   const leaveCount = records.filter((r) => r.status === "Leave").length;
@@ -65,6 +70,7 @@ export default function Attendance() {
   return (
     <div className="employee-page">
       <div className="employee-container">
+
         <div className="page-header">
           <img src="image/logo.png" alt="EMS Logo" className="header-logo" />
           <h1>Attendance Management</h1>
@@ -76,10 +82,12 @@ export default function Attendance() {
             <h2>{presentCount}</h2>
             <p>Present</p>
           </div>
+
           <div className="stat-card absent">
             <h2>{absentCount}</h2>
             <p>Absent</p>
           </div>
+
           <div className="stat-card leave">
             <h2>{leaveCount}</h2>
             <p>Leave</p>
@@ -117,6 +125,7 @@ export default function Attendance() {
         </div>
 
         <h2>Attendance Records</h2>
+
         <div className="employee-table">
           {records.length > 0 ? (
             <table>
@@ -128,6 +137,7 @@ export default function Attendance() {
                   <th>Status</th>
                 </tr>
               </thead>
+
               <tbody>
                 {records.map((record) => (
                   <tr key={record._id}>
@@ -142,11 +152,13 @@ export default function Attendance() {
                   </tr>
                 ))}
               </tbody>
+
             </table>
           ) : (
             <p className="no-data">No attendance records found</p>
           )}
         </div>
+
       </div>
     </div>
   );
